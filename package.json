@@ -1,0 +1,31 @@
+{
+  "name": "trpc-todos",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.22.0",
+  "scripts": {
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down",
+    "db:push": "pnpm --filter @todos/server db:push",
+    "dev": "pnpm -r --parallel dev",
+    "dev:server": "pnpm --filter @todos/server dev",
+    "dev:web": "pnpm --filter @todos/web dev",
+    "build": "pnpm --filter @todos/web build",
+    "lint": "vp lint",
+    "lint:fix": "vp lint --fix",
+    "format": "vp fmt",
+    "format:check": "vp fmt --check",
+    "typecheck": "pnpm -r typecheck",
+    "check": "vp check"
+  },
+  "devDependencies": {
+    "typescript": "7.0.2",
+    "vite-plus": "^0.3.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@node-rs/argon2",
+      "esbuild"
+    ]
+  }
+}
