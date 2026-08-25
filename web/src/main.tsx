@@ -1,19 +1,31 @@
-import { StrictMode, useState } from 'react';
-import { createRoot } from 'react-dom/client';
-import './index.css';
+import { createRouter, RouterProvider } from "@tanstack/react-router";
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "./index.css";
+import { initTheme } from "@/lib/theme";
+import { routeTree } from "./routeTree.gen";
 
-function Probe() {
-  const [n, setN] = useState(0);
-  const doubled = n * 2;
-  return (
-    <button type="button" className="rounded bg-slate-900 px-3 py-1 text-white" onClick={() => setN(n + 1)}>
-      {doubled}
-    </button>
-  );
+initTheme();
+
+const router = createRouter({
+  routeTree,
+  defaultPreload: "intent",
+  scrollRestoration: true,
+});
+
+declare module "@tanstack/react-router" {
+  interface Register {
+    router: typeof router;
+  }
 }
 
-createRoot(document.getElementById('root')!).render(
+const rootElement = document.getElementById("root");
+if (rootElement === null) {
+  throw new Error("找不到 #root 節點");
+}
+
+createRoot(rootElement).render(
   <StrictMode>
-    <Probe />
+    <RouterProvider router={router} />
   </StrictMode>,
 );

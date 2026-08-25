@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 /**
  * 前後端共用的驗證規則。
@@ -10,16 +10,16 @@ export const emailSchema = z
   .string()
   .trim()
   .toLowerCase()
-  .min(1, { message: '請輸入 Email' })
-  .pipe(z.email({ message: 'Email 格式不正確' }));
+  .min(1, { message: "請輸入 Email" })
+  .pipe(z.email({ message: "Email 格式不正確" }));
 
 /** 註冊用的強密碼規則：至少 8 碼，大寫、小寫、符號各至少 1 個（規格未要求數字） */
 export const strongPasswordSchema = z
   .string()
-  .min(8, { message: '密碼至少 8 碼' })
-  .refine((value) => /[A-Z]/.test(value), { message: '密碼需包含至少 1 個大寫字母' })
-  .refine((value) => /[a-z]/.test(value), { message: '密碼需包含至少 1 個小寫字母' })
-  .refine((value) => /[^A-Za-z0-9]/.test(value), { message: '密碼需包含至少 1 個符號' });
+  .min(8, { message: "密碼至少 8 碼" })
+  .refine((value) => /[A-Z]/.test(value), { message: "密碼需包含至少 1 個大寫字母" })
+  .refine((value) => /[a-z]/.test(value), { message: "密碼需包含至少 1 個小寫字母" })
+  .refine((value) => /[^A-Za-z0-9]/.test(value), { message: "密碼需包含至少 1 個符號" });
 
 export const registerInputSchema = z.object({
   email: emailSchema,
@@ -32,7 +32,7 @@ export const registerInputSchema = z.object({
  */
 export const loginInputSchema = z.object({
   email: emailSchema,
-  password: z.string().min(1, { message: '請輸入密碼' }),
+  password: z.string().min(1, { message: "請輸入密碼" }),
 });
 
 export const refreshInputSchema = z.object({
@@ -42,8 +42,8 @@ export const refreshInputSchema = z.object({
 export const todoTitleSchema = z
   .string()
   .trim()
-  .min(1, { message: '請輸入待辦內容' })
-  .max(200, { message: '待辦內容最多 200 字' });
+  .min(1, { message: "請輸入待辦內容" })
+  .max(200, { message: "待辦內容最多 200 字" });
 
 export const createTodoInputSchema = z.object({
   title: todoTitleSchema,
@@ -56,7 +56,7 @@ export const updateTodoInputSchema = z
     completed: z.boolean().optional(),
   })
   .refine((value) => value.title !== undefined || value.completed !== undefined, {
-    message: '沒有要更新的欄位',
+    message: "沒有要更新的欄位",
   });
 
 export const deleteTodoInputSchema = z.object({
@@ -93,4 +93,4 @@ export interface Todo {
 }
 
 /** 刪除彈窗必須輸入的確認字串 */
-export const DELETE_CONFIRMATION_WORD = 'delete';
+export const DELETE_CONFIRMATION_WORD = "delete";

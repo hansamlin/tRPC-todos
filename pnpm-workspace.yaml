@@ -7,5 +7,5 @@ allowBuilds:
   esbuild: set this to true or false
 
 onlyBuiltDependencies:
-  - '@node-rs/argon2'
+  - "@node-rs/argon2"
   - esbuild
