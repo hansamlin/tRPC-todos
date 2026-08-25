@@ -1,0 +1,33 @@
+# dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# build output
+dist/
+build/
+*.tsbuildinfo
+
+# env
+.env
+.env.*
+!.env.example
+
+# database volume (mounted postgres data — must never enter git)
+data/
+postgres-data/
+
+# logs
+*.log
+npm-debug.log*
+bun-debug.log*
+
+# editor / os
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# misc
+coverage/
+.cache/
