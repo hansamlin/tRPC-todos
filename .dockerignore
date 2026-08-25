@@ -1,0 +1,10 @@
+**/node_modules/
+.git/
+
+.env
+
+# Postgres 掛載目錄，非常大且完全不需要進 build context
+data/
+
+# 建置產物由映像檔內重新產生
+**/dist/
