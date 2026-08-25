@@ -8,14 +8,13 @@ import { cn } from "@/lib/utils";
 
 interface TodoItemProps {
   todo: Todo;
-  busy: boolean;
   onToggle: (completed: boolean) => void;
   onRename: (title: string) => void;
   onRequestDelete: () => void;
 }
 
 /** 單筆待辦：點標題可就地編輯，Enter / blur 儲存，Esc 取消 */
-export function TodoItem({ todo, busy, onToggle, onRename, onRequestDelete }: TodoItemProps) {
+export function TodoItem({ todo, onToggle, onRename, onRequestDelete }: TodoItemProps) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(todo.title);
   // 用來避免「Enter 儲存 / Esc 取消」之後 blur 再觸發一次儲存
@@ -23,6 +22,9 @@ export function TodoItem({ todo, busy, onToggle, onRename, onRequestDelete }: To
 
   const startEditing = () => {
     setDraft(todo.title);
+    // 上一輪的 Enter / Esc 會把 skipBlur 設為 true 後直接卸載 input，
+    // onBlur 沒有機會把它清掉，所以每次進入編輯都要重置，否則這一輪的 blur 儲存會被吞掉。
+    skipBlur.current = false;
     setEditing(true);
   };
 
@@ -44,7 +46,6 @@ export function TodoItem({ todo, busy, onToggle, onRename, onRequestDelete }: To
     <li className="flex items-center gap-3 rounded-lg border bg-card px-3 py-2.5 text-card-foreground transition-colors hover:bg-accent/40">
       <Checkbox
         checked={todo.completed}
-        disabled={busy}
         aria-label={todo.completed ? "標記為未完成" : "標記為已完成"}
         onCheckedChange={(checked) => {
           onToggle(checked === true);
@@ -96,7 +97,6 @@ export function TodoItem({ todo, busy, onToggle, onRename, onRequestDelete }: To
         type="button"
         variant="ghost"
         size="icon-sm"
-        disabled={busy}
         aria-label={`刪除「${todo.title}」`}
         className="text-muted-foreground hover:text-destructive"
         onClick={onRequestDelete}

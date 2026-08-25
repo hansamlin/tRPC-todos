@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { registerInputSchema } from "@todos/shared";
 import { useState } from "react";
@@ -16,7 +17,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { toErrorMessage, trpc } from "@/lib/trpc";
+import { toErrorMessage } from "@/lib/trpc";
+import { useTRPC } from "@/lib/trpc-react";
 import { useAuthStore } from "@/stores/auth";
 
 type RegisterValues = z.input<typeof registerInputSchema>;
@@ -32,8 +34,11 @@ export const Route = createFileRoute("/register")({
 
 function RegisterPage() {
   const navigate = useNavigate();
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
   const setAuth = useAuthStore((state) => state.setAuth);
   const [formError, setFormError] = useState<string | null>(null);
+  const registerMutation = useMutation(trpc.auth.register.mutationOptions());
 
   // 註冊採用強密碼規則（至少 8 碼 + 大寫 / 小寫 / 符號各 1）
   const form = useForm<RegisterValues, unknown, z.output<typeof registerInputSchema>>({
@@ -51,8 +56,10 @@ function RegisterPage() {
     setFormError(null);
     try {
       // 註冊成功直接視為登入，不再回到登入頁
-      const payload = await trpc.auth.register.mutate(values);
+      const payload = await registerMutation.mutateAsync(values);
       setAuth(payload);
+      // 換帳號時不要讓上一個使用者的快取殘留到 /todos
+      queryClient.clear();
       await navigate({ to: "/todos" });
     } catch (error) {
       setFormError(toErrorMessage(error, "註冊失敗，請稍後再試"));

@@ -23,4 +23,13 @@ export default defineConfig({
     alias: { "@": path.resolve(import.meta.dirname, "./src") },
   },
   server: { port: 5173 },
+  test: {
+    // 純元件測試：用 jsdom 的 DOM 語意（移除聚焦中的元素「不會」觸發 blur、
+    // 焦點移動才會），這正是本檔要鎖住的 skipBlur 行為所依賴的前提。
+    environment: "jsdom",
+    setupFiles: ["./src/test/setup.ts"],
+    include: ["src/**/*.test.{ts,tsx}"],
+    // 不需要真的處理 Tailwind CSS，省掉每個測試檔的編譯成本
+    css: false,
+  },
 });

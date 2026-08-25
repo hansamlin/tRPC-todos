@@ -7,8 +7,6 @@ interface AuthState {
   isAuthenticated: boolean;
   /** 登入 / 註冊成功後呼叫：寫入 cookie 並更新 store */
   setAuth: (payload: AuthPayload) => void;
-  /** 由 auth.me 補齊使用者資訊時使用 */
-  setUser: (user: PublicUser) => void;
   /** 登出：清掉 access + refresh cookie 並重設 store */
   logout: () => void;
 }
@@ -28,10 +26,6 @@ export const useAuthStore = create<AuthState>()((set) => ({
   setAuth: (payload) => {
     setAuthCookies({ accessToken: payload.accessToken, refreshToken: payload.refreshToken });
     set({ user: payload.user, isAuthenticated: true });
-  },
-
-  setUser: (user) => {
-    set({ user });
   },
 
   logout: () => {

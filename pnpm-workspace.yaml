@@ -3,9 +3,15 @@ packages:
   - server
   - web
 
-allowBuilds:
-  esbuild: set this to true or false
-
+# 需要執行安裝腳本的原生相依
 onlyBuiltDependencies:
   - "@node-rs/argon2"
   - esbuild
+
+allowBuilds:
+  esbuild: true
+
+# pnpm 若設有 minimumReleaseAge 政策，這些版本可直接安裝
+minimumReleaseAgeExclude:
+  - "@tanstack/query-core@5.102.3"
+  - "@tanstack/react-query@5.102.3"

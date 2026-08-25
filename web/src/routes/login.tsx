@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { loginInputSchema } from "@todos/shared";
 import { useState } from "react";
@@ -15,7 +16,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { toErrorMessage, trpc } from "@/lib/trpc";
+import { toErrorMessage } from "@/lib/trpc";
+import { useTRPC } from "@/lib/trpc-react";
 import { useAuthStore } from "@/stores/auth";
 
 type LoginValues = z.input<typeof loginInputSchema>;
@@ -32,8 +34,11 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const navigate = useNavigate();
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
   const setAuth = useAuthStore((state) => state.setAuth);
   const [formError, setFormError] = useState<string | null>(null);
+  const loginMutation = useMutation(trpc.auth.login.mutationOptions());
 
   // 登入只驗「兩欄都有填」（loginInputSchema），不可套用強密碼規則
   const form = useForm<LoginValues, unknown, z.output<typeof loginInputSchema>>({
@@ -49,8 +54,10 @@ function LoginPage() {
   const onSubmit = form.handleSubmit(async (values) => {
     setFormError(null);
     try {
-      const payload = await trpc.auth.login.mutate(values);
+      const payload = await loginMutation.mutateAsync(values);
       setAuth(payload);
+      // 換帳號時不要讓上一個使用者的快取殘留到 /todos
+      queryClient.clear();
       await navigate({ to: "/todos" });
     } catch (error) {
       setFormError(toErrorMessage(error, "登入失敗，請稍後再試"));

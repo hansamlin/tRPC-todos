@@ -4,8 +4,7 @@ import { observable } from "@trpc/server/observable";
 import { clearAuthCookies, getAccessToken, getRefreshToken, setAuthCookies } from "@/lib/cookies";
 import { authStore } from "@/stores/auth";
 
-const API_URL =
-  (import.meta.env.VITE_API_URL as string | undefined) ?? "http://localhost:3000/trpc";
+const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000/trpc";
 
 /** auth.refresh 本身是 public procedure，絕對不能讓它再觸發一次 refresh（會無限遞迴） */
 const REFRESH_PATH = "auth.refresh";

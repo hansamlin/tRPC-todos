@@ -8,6 +8,7 @@
 
 - React 19（已開啟 [React Compiler](https://oxc.rs/blog/2026-08-18-react-compiler-support.html)，由 `@vitejs/plugin-react` 的 `compiler: true` + `oxc-transform-react` 提供）
 - TanStack Router（file-based routing）
+- TanStack Query + `@trpc/tanstack-react-query`（伺服器狀態、樂觀更新）
 - shadcn/ui + Tailwind CSS v4
 - Zustand（auth 狀態）、zod（驗證）、react-hook-form（表單）
 
@@ -80,8 +81,13 @@ pnpm dev
 - 需要驗證的 API 一律以 `Authorization: Bearer <accessToken>` 呼叫。
 - Access token 效期 1 小時、refresh token 效期 1 天（皆由 `.env` 的 `ACCESS_TOKEN_TTL` / `REFRESH_TOKEN_TTL` 控制）。
 - Access token 過期時，前端會自動以 refresh token 換發新 token 並重試原請求；換發採 single-flight，避免同時多個請求重複換發。
-- 登出會清除所有 cookie 並導回登入頁。
+- 登出會清除所有 cookie 與查詢快取，並導回登入頁。
 - 密碼以 Argon2id 雜湊後存入資料庫，不以任何形式回傳給前端。
+
+## 待辦清單
+
+新增、勾選完成與刪除都採樂觀更新：畫面立即反映，失敗時自動回滾並顯示錯誤提示。
+`QueryClient` 的 `retry` 關閉，讓 401 的重試完全交由 tRPC link 的 single-flight 換發處理，避免兩層重試疊加。
 
 ## 密碼規則
 
