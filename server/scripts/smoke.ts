@@ -238,19 +238,23 @@ async function main(): Promise<void> {
 
   // --- 5b. list 排序：createdAt 由新到舊 ---
   // 前面的情境 list 只有 0~1 筆，驗不到排序；這裡刻意多建兩筆才測得出 desc()。
-  const orderToken = await accessTokenA();
   const extraIds: string[] = [];
   for (const title of ["第二筆", "第三筆"]) {
     await sleep(50); // 錯開 created_at，避免兩筆時間戳相同導致排序不可判定
     const extra = await call<TodoLike>("todo.create", {
       method: "POST",
       input: { title },
-      token: orderToken,
+      // 每次呼叫前才取 token：ACCESS_TOKEN_TTL=1s 時，跨越 sleep 重用同一顆 token 會過期，
+      // 讓這個情境變成在測 token 效期而不是排序。
+      token: await accessTokenA(),
     });
     if (extra.data) extraIds.push(extra.data.id);
   }
 
-  const ordered = await call<TodoLike[]>("todo.list", { method: "GET", token: orderToken });
+  const ordered = await call<TodoLike[]>("todo.list", {
+    method: "GET",
+    token: await accessTokenA(),
+  });
   const rows = ordered.data ?? [];
   let sortedDesc = true;
   for (let i = 1; i < rows.length; i += 1) {
