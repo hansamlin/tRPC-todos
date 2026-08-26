@@ -11,4 +11,15 @@ nginx
 # 並向 registry 查驗供應鏈政策（實測每次啟動多花約 7 秒且需要外網）。
 # 而 `pnpm run start` 追到底也只是執行 `bun src/index.ts`，這裡直接跑它。
 # 現在 runtime 映像檔裡根本沒有裝 pnpm。
+
+if [ -z "$JWT_ACCESS_SECRET" ]; then
+  echo "⚠️ JWT_ACCESS_SECRET 未設定，產生臨時密鑰（僅適合本地開發，重啟後所有 JWT 會失效）"
+  export JWT_ACCESS_SECRET=$(openssl rand -base64 64)
+fi
+
+if [ -z "$JWT_REFRESH_SECRET" ]; then
+  echo "⚠️ JWT_REFRESH_SECRET 未設定，產生臨時密鑰（僅適合本地開發，重啟後所有 JWT 會失效）"
+  export JWT_REFRESH_SECRET=$(openssl rand -base64 64)
+fi
+
 exec bun src/index.ts

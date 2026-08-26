@@ -3,7 +3,7 @@
 # =============================================================
 
 # ---------- builder：安裝依賴、建置前端、產出 server 的部署包 ----------
-FROM oven/bun:1-alpine AS builder
+FROM oven/bun:1.4-alpine AS builder
 
 # 這個映像檔本身沒有 pnpm，裝一個與 packageManager 相同的版本
 RUN bun add -g pnpm@11.22.0
@@ -36,9 +36,10 @@ RUN pnpm build
 RUN pnpm deploy --legacy --filter @todos/server --prod /out
 
 # ---------- runtime：nginx + bun（不需要 pnpm） ----------
-FROM oven/bun:1-alpine
+FROM oven/bun:1.4-alpine
 
 RUN apk add --no-cache nginx
+RUN apk add --no-cache openssl
 
 WORKDIR /app
 
@@ -53,6 +54,14 @@ COPY nginx/default.conf /etc/nginx/http.d/default.conf
 
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
+
+ARG DATABASE_URL=postgres://todos:todos_dev_password@localhost:5432/todos
+ENV DATABASE_URL=$DATABASE_URL
+ENV PORT=3000
+ENV CORS_ORIGIN=http://localhost:5173
+
+ENV ACCESS_TOKEN_TTL=1h
+ENV REFRESH_TOKEN_TTL=1d
 
 EXPOSE 80
 
