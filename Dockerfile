@@ -55,11 +55,8 @@ COPY nginx/default.conf /etc/nginx/http.d/default.conf
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
-ARG DATABASE_URL=postgres://todos:todos_dev_password@localhost:5432/todos
-ENV DATABASE_URL=$DATABASE_URL
 ENV PORT=3000
 ENV CORS_ORIGIN=http://localhost:5173
-
 ENV ACCESS_TOKEN_TTL=1h
 ENV REFRESH_TOKEN_TTL=1d
 
