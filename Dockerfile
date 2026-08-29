@@ -6,7 +6,7 @@
 FROM oven/bun:1.4-alpine AS builder
 
 # 這個映像檔本身沒有 pnpm，裝一個與 packageManager 相同的版本
-RUN bun add -g pnpm@11.22.0
+RUN bun add -g pnpm@12.0.0
 ENV PATH="/root/.bun/bin:$PATH"
 
 WORKDIR /app
