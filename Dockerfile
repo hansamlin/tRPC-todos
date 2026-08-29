@@ -61,11 +61,6 @@ COPY nginx/default.conf /etc/nginx/http.d/default.conf
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
-ENV PORT=3000
-ENV CORS_ORIGIN=http://localhost:5173
-ENV ACCESS_TOKEN_TTL=1h
-ENV REFRESH_TOKEN_TTL=1d
-
 EXPOSE 80
 
 CMD ["/docker-entrypoint.sh"]
