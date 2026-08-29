@@ -39,7 +39,7 @@
 
 ## 開始使用
 
-需求：Node 22+、[pnpm](https://pnpm.io) 11、[Bun](https://bun.sh) 1.4+、Docker。
+需求：Node 22+、[pnpm](https://pnpm.io) 12、[Bun](https://bun.sh) 1.4+、Docker。
 
 ```bash
 # 1. 安裝依賴
