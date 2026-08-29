@@ -10,3 +10,9 @@ onlyBuiltDependencies:
 
 allowBuilds:
   esbuild: true
+
+# 多個相依（vite、drizzle-kit...）各自要求不同 esbuild 版本時，
+# postinstall build script 並行執行會互相讀到對方剛裝好的 binary，
+# 造成 "Expected X but got Y" 的隨機失敗，統一版本以消除碰撞。
+overrides:
+  esbuild: 0.28.2
