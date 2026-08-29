@@ -5,9 +5,13 @@
 # ---------- builder：安裝依賴、建置前端、產出 server 的部署包 ----------
 FROM oven/bun:1.4-alpine AS builder
 
-# 這個映像檔本身沒有 pnpm，裝一個與 packageManager 相同的版本
-RUN bun add -g pnpm@12.0.0
-ENV PATH="/root/.bun/bin:$PATH"
+# 這個映像檔本身沒有 pnpm，用官方安裝腳本裝一個與 packageManager 相同的版本。
+# 不用 `bun add -g`：pnpm 12 靠 postinstall 把 native binary 換掉 placeholder，
+# 但 Bun 預設會擋 postinstall build script，官方腳本則不受此限制。
+RUN wget -qO- https://get.pnpm.io/install.sh | \
+    ENV="$HOME/.shrc" SHELL="$(which sh)" PNPM_VERSION=12.0.0 sh -
+ENV PNPM_HOME="/root/.local/share/pnpm"
+ENV PATH="$PNPM_HOME/bin:$PATH"
 
 WORKDIR /app
 
