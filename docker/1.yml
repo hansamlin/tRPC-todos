@@ -1,0 +1,42 @@
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    image: trpc-todos-app
+    container_name: trpc-todos-app
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql://${POSTGRES_USER:-todos}:${POSTGRES_PASSWORD:-todos_dev_password}@postgres:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-todos}}
+      PORT: ${PORT:-3000}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:5173}
+      ACCESS_TOKEN_TTL: ${ACCESS_TOKEN_TTL:-1h}
+      REFRESH_TOKEN_TTL: ${ACCESS_TOKEN_TTL:-1d}
+      VITE_API_URL: http://localhost:3000/trpc
+    ports:
+      - 8080:80
+      - "${PORT:-3000}:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+  postgres:
+    image: postgres:17-alpine
+    container_name: trpc-todos-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-todos}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-todos_dev_password}
+      POSTGRES_DB: ${POSTGRES_DB:-todos}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - ./1/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-todos} -d ${POSTGRES_DB:-todos}",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
